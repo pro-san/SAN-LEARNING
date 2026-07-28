@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { INITIAL_COURSES } from './data/coursesData';
 import { INITIAL_REVIEWS } from './data/reviewsData';
-import { Course, Lesson, User, LessonNote, Certificate, CourseReview } from './types';
+import { Course, Lesson, User, LessonNote, Certificate, CourseReview, SimulatedEmail } from './types';
 import { Navbar } from './components/Navbar';
 import { HeroBanner } from './components/HeroBanner';
 import { CourseCard } from './components/CourseCard';
@@ -11,8 +11,24 @@ import { AiTutorDrawer } from './components/AiTutorDrawer';
 import { AuthModal } from './components/AuthModal';
 import { CertificateModal } from './components/CertificateModal';
 import { StudentProfileView } from './components/StudentProfileView';
+import { EmailNotificationModal } from './components/EmailNotificationModal';
+import { EmailToastNotification } from './components/EmailToastNotification';
 import { initAuth, logoutUser, setAccessToken } from './services/auth';
 import { BookOpen, Sparkles, GraduationCap, CheckCircle2 } from 'lucide-react';
+
+const INITIAL_EMAILS: SimulatedEmail[] = [
+  {
+    id: 'email-welcome-1',
+    toEmail: 'student@prolearning.edu.kh',
+    fromName: 'PRO LEARNING Certificate Office',
+    fromEmail: 'certificates@prolearning.edu.kh',
+    subject: '🎓 ស្វាគមន៍មកកាន់ PRO LEARNING! ប្រព័ន្ធវិញ្ញាបនបត្រ និងអ៊ីម៉ែលជូនដំណឹង',
+    bodyText: 'ស្វាគមន៍មកកាន់ប្រព័ន្ធសិក្សាអនឡាញ PRO LEARNING! នៅពេលអ្នករៀនបញ្ចប់មេរៀនទាំងអស់ក្នុងវគ្គសិក្សាណាមួយ ប្រព័ន្ធនឹងផ្ញើអ៊ីម៉ែលជូនដំណឹងអំពីការទទួលបានវិញ្ញាបនបត្រផ្លូវការដោយស្វ័យប្រវត្តិ។',
+    bodyHtml: '',
+    sentAt: '09:00 AM',
+    isRead: false,
+  }
+];
 
 export default function App() {
   const [lang, setLang] = useState<'km' | 'en'>('km');
@@ -86,7 +102,19 @@ export default function App() {
     return INITIAL_REVIEWS;
   });
 
-  // Save user & notes & reviews state
+  // Emails simulation state
+  const [emails, setEmails] = useState<SimulatedEmail[]>(() => {
+    const saved = localStorage.getItem('elearning_emails');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return INITIAL_EMAILS;
+  });
+
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState<boolean>(false);
+  const [emailToast, setEmailToast] = useState<{ email: SimulatedEmail; visible: boolean } | null>(null);
+
+  // Save user & notes & reviews & emails state
   useEffect(() => {
     if (user) {
       localStorage.setItem('elearning_user', JSON.stringify(user));
@@ -102,6 +130,89 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('elearning_reviews', JSON.stringify(reviews));
   }, [reviews]);
+
+  useEffect(() => {
+    localStorage.setItem('elearning_emails', JSON.stringify(emails));
+  }, [emails]);
+
+  const handleMarkEmailRead = (emailId: string) => {
+    setEmails(prev => prev.map(e => e.id === emailId ? { ...e, isRead: true } : e));
+  };
+
+  const handleDeleteEmail = (emailId: string) => {
+    setEmails(prev => prev.filter(e => e.id !== emailId));
+  };
+
+  const handleSendTestEmail = () => {
+    const sampleCourse = INITIAL_COURSES[0];
+    const testCertCode = `KH-EDU-${Math.floor(100000 + Math.random() * 900000)}`;
+    const nowFormatted = new Date().toLocaleTimeString('km-KH', { hour: '2-digit', minute: '2-digit' });
+    
+    const testEmail: SimulatedEmail = {
+      id: `email-${Date.now()}`,
+      toEmail: user?.email || 'student@prolearning.edu.kh',
+      fromName: 'PRO LEARNING Certificate Office',
+      fromEmail: 'certificates@prolearning.edu.kh',
+      subject: lang === 'km'
+        ? `🎓 [សាកល្បង] អបអរសាទរ! អ្នកបានបញ្ចប់វគ្គសិក្សា ${sampleCourse.titleKm}`
+        : `🎓 [TEST] Congratulations! You completed ${sampleCourse.titleEn}`,
+      bodyText: lang === 'km'
+        ? `នេះជាអ៊ីម៉ែលគំរូសាកល្បង៖ សូមអបអរសាទរ ${user?.name || 'សិស្សជាទីស្រឡាញ់'}! អ្នកបានបញ្ចប់វគ្គសិក្សា "${sampleCourse.titleKm}" ដោយជោគជ័យ និងទទួលបានវិញ្ញាបនបត្រផ្លូវការលេខកូដ ${testCertCode}។`
+        : `This is a test notification email: Hearty congratulations ${user?.name || 'Student'}! You have completed "${sampleCourse.titleEn}" and earned your official certificate with code ${testCertCode}.`,
+      bodyHtml: '',
+      sentAt: nowFormatted,
+      isRead: false,
+      courseId: sampleCourse.id,
+      courseTitle: lang === 'km' ? sampleCourse.titleKm : sampleCourse.titleEn,
+      certificateCode: testCertCode,
+    };
+
+    if (user) {
+      setUser(prev => {
+        if (!prev) return null;
+        if (prev.certificates.some(c => c.code === testCertCode)) return prev;
+        const newCert: Certificate = {
+          id: `cert-${Date.now()}`,
+          courseId: sampleCourse.id,
+          courseTitle: sampleCourse.titleKm,
+          studentName: prev.name,
+          issuedDate: new Date().toISOString().split('T')[0],
+          code: testCertCode,
+        };
+        return {
+          ...prev,
+          certificates: [newCert, ...prev.certificates]
+        };
+      });
+    }
+
+    setEmails(prev => [testEmail, ...prev]);
+    setEmailToast({ email: testEmail, visible: true });
+  };
+
+  const handleViewCertificateFromEmail = (code?: string) => {
+    if (!code) {
+      if (user?.certificates.length) {
+        setActiveCertificate(user.certificates[0]);
+      }
+      return;
+    }
+
+    const existingCert = user?.certificates.find(c => c.code === code);
+    if (existingCert) {
+      setActiveCertificate(existingCert);
+    } else {
+      const sampleCert: Certificate = {
+        id: `cert-view-${Date.now()}`,
+        courseId: 'course-web-dev',
+        courseTitle: INITIAL_COURSES[0].titleKm,
+        studentName: user?.name || 'សិស្សកម្ពុជា',
+        issuedDate: new Date().toISOString().split('T')[0],
+        code: code
+      };
+      setActiveCertificate(sampleCert);
+    }
+  };
 
   const handleAddReview = (newReviewData: Omit<CourseReview, 'id' | 'createdAt'>) => {
     const nowFormatted = new Date().toLocaleDateString('km-KH', {
@@ -227,7 +338,7 @@ export default function App() {
         ? prev.completedLessonIds.filter(id => id !== lessonId)
         : [...prev.completedLessonIds, lessonId];
       
-      // Check if all lessons of activeCourse are completed to generate certificate
+      // Check if all lessons of activeCourse are completed to generate certificate & send email
       if (activeCourse && !isCompleted) {
         const allLessonIds = activeCourse.modules.flatMap(m => m.lessons.map(l => l.id));
         const hasAll = allLessonIds.every(id => newCompleted.includes(id) || id === lessonId);
@@ -244,6 +355,30 @@ export default function App() {
           };
           updatedCertificates.push(newCert);
           setActiveCertificate(newCert);
+
+          // Dispatch simulated email notification!
+          const nowFormatted = new Date().toLocaleTimeString('km-KH', { hour: '2-digit', minute: '2-digit' });
+          const certEmail: SimulatedEmail = {
+            id: `email-${Date.now()}`,
+            toEmail: prev.email || 'student@prolearning.edu.kh',
+            fromName: 'PRO LEARNING Certificate Office',
+            fromEmail: 'certificates@prolearning.edu.kh',
+            subject: lang === 'km'
+              ? `🎓 អបអរសាទរ! អ្នកបានបញ្ចប់វគ្គសិក្សា ${activeCourse.titleKm} និងទទួលបានវិញ្ញាបនបត្រ`
+              : `🎓 Congratulations! You completed ${activeCourse.titleEn} and earned a Certificate`,
+            bodyText: lang === 'km'
+              ? `សូមអបអរសាទរ ${prev.name}! អ្នកបានរៀន និងបញ្ចប់មេរៀនទាំងអស់ក្នុងវគ្គសិក្សា "${activeCourse.titleKm}" ដោយជោគជ័យ។ វិញ្ញាបនបត្រផ្លូវការលេខកូដ ${newCert.code} ត្រូវប្រគល់ជូនអ្នក។`
+              : `Hearty congratulations ${prev.name}! You have successfully completed all lessons in "${activeCourse.titleEn}". Your official certificate (Code: ${newCert.code}) has been issued.`,
+            bodyHtml: '',
+            sentAt: nowFormatted,
+            isRead: false,
+            courseId: activeCourse.id,
+            courseTitle: lang === 'km' ? activeCourse.titleKm : activeCourse.titleEn,
+            certificateCode: newCert.code,
+          };
+
+          setEmails(existing => [certEmail, ...existing]);
+          setEmailToast({ email: certEmail, visible: true });
         }
 
         return { ...prev, completedLessonIds: newCompleted, certificates: updatedCertificates };
@@ -315,6 +450,8 @@ export default function App() {
         onOpenAuth={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
         onOpenAiTutor={() => setIsAiTutorOpen(true)}
+        onOpenEmailInbox={() => setIsEmailModalOpen(true)}
+        unreadEmailCount={emails.filter(e => !e.isRead).length}
       />
 
       {/* Main View Switcher */}
@@ -429,6 +566,7 @@ export default function App() {
               }
             }}
             onViewCertificate={(cert) => setActiveCertificate(cert)}
+            onOpenEmailInbox={() => setIsEmailModalOpen(true)}
             lang={lang}
           />
         )}
@@ -505,6 +643,27 @@ export default function App() {
         certificate={activeCertificate}
         isOpen={!!activeCertificate}
         onClose={() => setActiveCertificate(null)}
+        lang={lang}
+      />
+
+      <EmailNotificationModal
+        isOpen={isEmailModalOpen}
+        onClose={() => setIsEmailModalOpen(false)}
+        emails={emails}
+        onMarkAsRead={handleMarkEmailRead}
+        onDeleteEmail={handleDeleteEmail}
+        onViewCertificate={handleViewCertificateFromEmail}
+        onSendTestEmail={handleSendTestEmail}
+        user={user}
+        certificates={user?.certificates || []}
+        lang={lang}
+      />
+
+      <EmailToastNotification
+        toast={emailToast}
+        onClose={() => setEmailToast(null)}
+        onOpenInbox={() => setIsEmailModalOpen(true)}
+        onViewCertificate={handleViewCertificateFromEmail}
         lang={lang}
       />
 

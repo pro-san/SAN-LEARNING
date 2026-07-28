@@ -12,7 +12,8 @@ import {
   Menu, 
   X,
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  Mail
 } from 'lucide-react';
 import { User } from '../types';
 
@@ -25,6 +26,8 @@ interface NavbarProps {
   onOpenAuth: () => void;
   onLogout: () => void;
   onOpenAiTutor: () => void;
+  onOpenEmailInbox?: () => void;
+  unreadEmailCount?: number;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -35,7 +38,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   setLang,
   onOpenAuth,
   onLogout,
-  onOpenAiTutor
+  onOpenAiTutor,
+  onOpenEmailInbox,
+  unreadEmailCount = 0,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -106,6 +111,22 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Action Bar */}
           <div className="hidden md:flex items-center gap-3">
+            {/* Email Inbox Simulation Button */}
+            {onOpenEmailInbox && (
+              <button
+                onClick={onOpenEmailInbox}
+                className="relative p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors flex items-center justify-center cursor-pointer"
+                title={isKm ? 'ប្រអប់អ៊ីម៉ែលជូនដំណឹង' : 'Simulated Email Inbox'}
+              >
+                <Mail className="w-4 h-4 text-slate-600" />
+                {unreadEmailCount > 0 && (
+                  <span className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white animate-bounce shadow-xs">
+                    {unreadEmailCount}
+                  </span>
+                )}
+              </button>
+            )}
+
             {/* Language Switcher */}
             <button
               onClick={() => setLang(isKm ? 'en' : 'km')}
@@ -158,6 +179,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <span>{isKm ? 'គណនី និងវឌ្ឍនភាព' : 'Student Profile'}</span>
                     </button>
 
+                    {onOpenEmailInbox && (
+                      <button
+                        onClick={() => {
+                          onOpenEmailInbox();
+                          setProfileDropdownOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4 text-indigo-600" />
+                          <span>{isKm ? 'ប្រអប់អ៊ីម៉ែលជូនដំណឹង' : 'Email Notifications'}</span>
+                        </div>
+                        {unreadEmailCount > 0 && (
+                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-500 text-white">
+                            {unreadEmailCount}
+                          </span>
+                        )}
+                      </button>
+                    )}
+
                     <button
                       onClick={() => {
                         setActiveTab('certificates');
@@ -196,7 +237,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Mobile menu trigger */}
-          <div className="md:hidden flex items-center gap-2">
+          <div className="md:hidden flex items-center gap-1.5">
+            {onOpenEmailInbox && (
+              <button
+                onClick={onOpenEmailInbox}
+                className="relative p-2 text-slate-700 hover:bg-slate-100 rounded-lg"
+                title={isKm ? 'ប្រអប់អ៊ីម៉ែល' : 'Email Inbox'}
+              >
+                <Mail className="w-5 h-5 text-slate-700" />
+                {unreadEmailCount > 0 && (
+                  <span className="absolute top-1 right-1 px-1.5 py-0.2 rounded-full text-[9px] font-black bg-rose-500 text-white">
+                    {unreadEmailCount}
+                  </span>
+                )}
+              </button>
+            )}
+
             <button
               onClick={() => setLang(isKm ? 'en' : 'km')}
               className="p-2 text-xs font-bold text-slate-700"
@@ -232,6 +288,23 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               <span>{isKm ? 'មេរៀនរបស់ខ្ញុំ' : 'My Enrolled Courses'}</span>
+            </button>
+          )}
+
+          {onOpenEmailInbox && (
+            <button
+              onClick={() => { onOpenEmailInbox(); setMobileMenuOpen(false); }}
+              className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100 flex items-center justify-between"
+            >
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-indigo-600" />
+                <span>{isKm ? 'ប្រអប់អ៊ីម៉ែលជូនដំណឹង' : 'Email Notifications'}</span>
+              </div>
+              {unreadEmailCount > 0 && (
+                <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-500 text-white">
+                  {unreadEmailCount}
+                </span>
+              )}
             </button>
           )}
 

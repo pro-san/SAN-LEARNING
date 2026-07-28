@@ -1,12 +1,13 @@
 import React from 'react';
 import { User, Course, Certificate } from '../types';
-import { BookOpen, Award, Clock, Bookmark, CheckCircle2, User as UserIcon, Play } from 'lucide-react';
+import { BookOpen, Award, Clock, Bookmark, CheckCircle2, User as UserIcon, Play, Mail, ShieldCheck } from 'lucide-react';
 
 interface StudentProfileViewProps {
   user: User;
   courses: Course[];
   onSelectCourse: (course: Course) => void;
   onViewCertificate: (cert: Certificate) => void;
+  onOpenEmailInbox?: () => void;
   lang: 'km' | 'en';
 }
 
@@ -15,6 +16,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
   courses,
   onSelectCourse,
   onViewCertificate,
+  onOpenEmailInbox,
   lang,
 }) => {
   const isKm = lang === 'km';
@@ -57,6 +59,39 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Email Notification Status Bar */}
+      {onOpenEmailInbox && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
+          <div className="flex items-center gap-3 text-left">
+            <div className="p-2.5 bg-blue-600 text-white rounded-xl shadow-xs">
+              <Mail className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+                <span>{isKm ? 'ប្រព័ន្ធអ៊ីម៉ែលជូនដំណឹងវិញ្ញាបនបត្រ' : 'Certificate Email Notification System'}</span>
+                <span className="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 text-[10px] font-extrabold flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                  {isKm ? 'សកម្ម' : 'ACTIVE'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-600 mt-0.5">
+                {isKm 
+                  ? `រាល់ពេលបញ្ចប់មេរៀនក្នុងវគ្គសិក្សា ប្រព័ន្ធនឹងផ្ញើអ៊ីម៉ែលជូនដំណឹងទៅ ${user.email}` 
+                  : `Automated certificate issuance emails sent directly to ${user.email}`}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={onOpenEmailInbox}
+            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+          >
+            <Mail className="w-4 h-4" />
+            <span>{isKm ? 'ពិនិត្យប្រអប់សំបុត្រអ៊ីម៉ែល' : 'Check Email Inbox'}</span>
+          </button>
+        </div>
+      )}
 
       {/* Enrolled Courses Section */}
       <div className="space-y-4">

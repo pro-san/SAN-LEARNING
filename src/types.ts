@@ -143,3 +143,18 @@ export interface CourseReview {
   isVerifiedEnrolled?: boolean;
 }
 
+export interface SimulatedEmail {
+  id: string;
+  toEmail: string;
+  fromName: string;
+  fromEmail: string;
+  subject: string;
+  bodyHtml: string;
+  bodyText: string;
+  sentAt: string;
+  isRead: boolean;
+  courseId?: string;
+  courseTitle?: string;
+  certificateCode?: string;
+}
+
