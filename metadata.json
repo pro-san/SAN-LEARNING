@@ -1,0 +1,6 @@
+{
+  "name": "PRO LEARNING",
+  "description": "PRO LEARNING - កម្មវិធីរៀនសូត្រអនឡាញ មើលវីដេអូមេរៀន និងចុះឈ្មោះសិក្សា",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
