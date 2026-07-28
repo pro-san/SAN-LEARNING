@@ -1,6 +1,7 @@
 import React from 'react';
 import { User, Course, Certificate } from '../types';
 import { BookOpen, Award, Clock, Bookmark, CheckCircle2, User as UserIcon, Play, Mail, ShieldCheck } from 'lucide-react';
+import { LearningProgressChart } from './LearningProgressChart';
 
 interface StudentProfileViewProps {
   user: User;
@@ -92,6 +93,9 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
           </button>
         </div>
       )}
+
+      {/* Learning Progress Visual Analytics Chart */}
+      <LearningProgressChart user={user} courses={courses} lang={lang} />
 
       {/* Enrolled Courses Section */}
       <div className="space-y-4">
