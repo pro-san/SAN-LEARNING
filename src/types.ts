@@ -8,6 +8,7 @@ export interface User {
   completedLessonIds: string[];
   bookmarkedCourseIds: string[];
   totalMinutesLearned: number;
+  lessonTimeSpentSeconds?: Record<string, number>;
   certificates: Certificate[];
   isGoogleAuthenticated?: boolean;
   googleAccessToken?: string | null;

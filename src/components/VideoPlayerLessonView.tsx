@@ -37,6 +37,7 @@ interface VideoPlayerLessonViewProps {
   notes: LessonNote[];
   onAddNote: (noteText: string, timestamp: number) => void;
   onDeleteNote: (noteId: string) => void;
+  onUpdateLessonTimeSpent?: (lessonId: string, secondsIncrement: number) => void;
   lang: 'km' | 'en';
 }
 
@@ -51,10 +52,36 @@ export const VideoPlayerLessonView: React.FC<VideoPlayerLessonViewProps> = ({
   notes,
   onAddNote,
   onDeleteNote,
+  onUpdateLessonTimeSpent,
   lang,
 }) => {
   const isKm = lang === 'km';
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Timer tracking state for individual lesson
+  const [isTimerActive, setIsTimerActive] = useState(true);
+
+  // Auto-increment lesson timer every 1 second when active
+  useEffect(() => {
+    if (!isTimerActive) return;
+    const interval = setInterval(() => {
+      if (onUpdateLessonTimeSpent) {
+        onUpdateLessonTimeSpent(currentLesson.id, 1);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [currentLesson.id, isTimerActive, onUpdateLessonTimeSpent]);
+
+  // Format seconds into minutes and seconds string
+  const currentLessonSeconds = user?.lessonTimeSpentSeconds?.[currentLesson.id] || 0;
+  const formatLessonSpent = (secs: number) => {
+    const mins = Math.floor(secs / 60);
+    const s = secs % 60;
+    if (mins > 0) {
+      return `${mins}m ${s < 10 ? '0' : ''}${s}s`;
+    }
+    return `${s}s`;
+  };
 
   // Player state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -240,6 +267,27 @@ export const VideoPlayerLessonView: React.FC<VideoPlayerLessonViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Live Lesson Timer Badge */}
+          <div className="hidden md:flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl text-xs">
+            <div className="flex items-center gap-1.5 text-sky-400 font-bold font-mono">
+              <Clock className="w-3.5 h-3.5 text-sky-400" />
+              <span>{formatLessonSpent(currentLessonSeconds)}</span>
+            </div>
+            <span className="text-slate-700">|</span>
+            <button
+              onClick={() => setIsTimerActive(!isTimerActive)}
+              className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+                isTimerActive 
+                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30' 
+                  : 'bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30'
+              }`}
+              title={isTimerActive ? (isKm ? 'ចុចដើម្បីផ្អាកការកត់ត្រា' : 'Pause timer') : (isKm ? 'ចុចដើម្បីបន្តកត់ត្រា' : 'Resume timer')}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${isTimerActive ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+              <span>{isTimerActive ? (isKm ? 'កំពុងកត់ត្រា' : 'Tracking') : (isKm ? 'បានផ្អាក' : 'Paused')}</span>
+            </button>
+          </div>
+
           <button
             onClick={() => onMarkLessonCompleted(currentLesson.id)}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
@@ -737,9 +785,18 @@ export const VideoPlayerLessonView: React.FC<VideoPlayerLessonViewProps> = ({
                           </span>
                         </div>
 
-                        <span className="text-[10px] font-mono text-slate-500">
-                          {les.duration}
-                        </span>
+                        <div className="flex flex-col items-end shrink-0 gap-0.5">
+                          {user?.lessonTimeSpentSeconds?.[les.id] ? (
+                            <span className="text-[10px] font-mono font-bold text-sky-400 bg-sky-950/80 border border-sky-800/60 px-1.5 py-0.5 rounded shadow-xs flex items-center gap-1">
+                              <Clock className="w-2.5 h-2.5 text-sky-400" />
+                              <span>{formatLessonSpent(user.lessonTimeSpentSeconds[les.id])}</span>
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-mono text-slate-500">
+                              {les.duration}
+                            </span>
+                          )}
+                        </div>
                       </button>
                     );
                   })}

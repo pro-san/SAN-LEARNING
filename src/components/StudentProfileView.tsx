@@ -97,6 +97,90 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
       {/* Learning Progress Visual Analytics Chart */}
       <LearningProgressChart user={user} courses={courses} lang={lang} />
 
+      {/* Per-Lesson Detailed Time Spent Log */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-indigo-100 text-indigo-700 rounded-xl">
+              <Clock className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900 font-heading">
+                {isKm ? 'កត់ត្រាពេលវេលារៀនតាមមេរៀន (Lesson Time Logs)' : 'Per-Lesson Time Logs'}
+              </h3>
+              <p className="text-[11px] text-slate-500">
+                {isKm ? 'ពេលវេលាដែលបានសិក្សាពិតប្រាកដក្នុងមេរៀននីមួយៗ' : 'Exact recorded duration spent studying each individual lesson'}
+              </p>
+            </div>
+          </div>
+          <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+            {user.totalMinutesLearned} {isKm ? 'នាទីសរុប' : 'Total Mins'}
+          </span>
+        </div>
+
+        {(() => {
+          // Gather all lessons across enrolled courses
+          const enrolled = courses.filter(c => user.enrolledCourseIds.includes(c.id));
+          const allLessonsWithTime = enrolled.flatMap(course => 
+            course.modules.flatMap(mod => 
+              mod.lessons.map(les => ({
+                courseTitle: isKm ? course.titleKm : course.titleEn,
+                lessonId: les.id,
+                title: isKm ? les.titleKm : les.titleEn,
+                expectedDuration: les.duration,
+                secondsSpent: user.lessonTimeSpentSeconds?.[les.id] || 0,
+                isCompleted: user.completedLessonIds.includes(les.id)
+              }))
+            )
+          );
+
+          if (allLessonsWithTime.length === 0) {
+            return (
+              <p className="text-xs text-slate-500 text-center py-4">
+                {isKm ? 'ចុះឈ្មោះវគ្គសិក្សាដើម្បីចាប់ផ្តើមកត់ត្រាពេលវេលារៀន' : 'Enroll in a course to begin tracking lesson study duration.'}
+              </p>
+            );
+          }
+
+          return (
+            <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+              {allLessonsWithTime.map((item) => {
+                const mins = Math.floor(item.secondsSpent / 60);
+                const secs = item.secondsSpent % 60;
+                const formatted = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+
+                return (
+                  <div key={item.lessonId} className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className={`p-2 rounded-xl shrink-0 ${item.isCompleted ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
+                        {item.isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+                      </div>
+                      <div className="overflow-hidden">
+                        <div className="font-bold text-slate-900 truncate">{item.title}</div>
+                        <div className="text-[10px] text-slate-500 truncate">{item.courseTitle}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">
+                        {isKm ? 'គោលដៅ' : 'Target'}: {item.expectedDuration}
+                      </span>
+                      <span className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold border ${
+                        item.secondsSpent > 0 
+                          ? 'bg-sky-50 text-sky-700 border-sky-200' 
+                          : 'bg-slate-100 text-slate-500 border-slate-200'
+                      }`}>
+                        ⏱️ {formatted}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+      </div>
+
       {/* Enrolled Courses Section */}
       <div className="space-y-4">
         <h2 className="text-lg font-bold text-slate-900 font-heading flex items-center gap-2">

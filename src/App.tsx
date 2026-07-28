@@ -328,6 +328,31 @@ export default function App() {
     });
   };
 
+  // Update time spent on individual lesson
+  const handleUpdateLessonTimeSpent = (lessonId: string, secondsIncrement: number) => {
+    if (!user) return;
+    setUser(prev => {
+      if (!prev) return null;
+      const currentMap = prev.lessonTimeSpentSeconds || {};
+      const previousSecs = currentMap[lessonId] || 0;
+      const newSecs = previousSecs + secondsIncrement;
+      const updatedMap = {
+        ...currentMap,
+        [lessonId]: newSecs
+      };
+
+      // Sum all seconds spent across all lessons
+      const totalSecsAll = (Object.values(updatedMap) as number[]).reduce((acc: number, curr: number) => acc + curr, 0);
+      const calculatedTotalMinutes = Math.floor(totalSecsAll / 60);
+
+      return {
+        ...prev,
+        lessonTimeSpentSeconds: updatedMap,
+        totalMinutesLearned: Math.max(prev.totalMinutesLearned, calculatedTotalMinutes)
+      };
+    });
+  };
+
   // Mark lesson as completed
   const handleMarkLessonCompleted = (lessonId: string) => {
     if (!user) return;
@@ -431,6 +456,7 @@ export default function App() {
         notes={currentNotes}
         onAddNote={handleAddNote}
         onDeleteNote={handleDeleteNote}
+        onUpdateLessonTimeSpent={handleUpdateLessonTimeSpent}
         lang={lang}
       />
     );
