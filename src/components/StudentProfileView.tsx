@@ -98,22 +98,22 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
       <LearningProgressChart user={user} courses={courses} lang={lang} />
 
       {/* Per-Lesson Detailed Time Spent Log */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4 transition-colors">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-indigo-100 text-indigo-700 rounded-xl">
+            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 rounded-xl">
               <Clock className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-extrabold text-slate-900 font-heading">
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white font-heading">
                 {isKm ? 'កត់ត្រាពេលវេលារៀនតាមមេរៀន (Lesson Time Logs)' : 'Per-Lesson Time Logs'}
               </h3>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {isKm ? 'ពេលវេលាដែលបានសិក្សាពិតប្រាកដក្នុងមេរៀននីមួយៗ' : 'Exact recorded duration spent studying each individual lesson'}
               </p>
             </div>
           </div>
-          <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+          <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80">
             {user.totalMinutesLearned} {isKm ? 'នាទីសរុប' : 'Total Mins'}
           </span>
         </div>
@@ -136,7 +136,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
 
           if (allLessonsWithTime.length === 0) {
             return (
-              <p className="text-xs text-slate-500 text-center py-4">
+              <p className="text-xs text-slate-500 dark:text-slate-400 text-center py-4">
                 {isKm ? 'ចុះឈ្មោះវគ្គសិក្សាដើម្បីចាប់ផ្តើមកត់ត្រាពេលវេលារៀន' : 'Enroll in a course to begin tracking lesson study duration.'}
               </p>
             );
@@ -150,25 +150,25 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                 const formatted = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
 
                 return (
-                  <div key={item.lessonId} className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between gap-3 text-xs">
+                  <div key={item.lessonId} className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-3 overflow-hidden">
-                      <div className={`p-2 rounded-xl shrink-0 ${item.isCompleted ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
+                      <div className={`p-2 rounded-xl shrink-0 ${item.isCompleted ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
                         {item.isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
                       </div>
                       <div className="overflow-hidden">
-                        <div className="font-bold text-slate-900 truncate">{item.title}</div>
-                        <div className="text-[10px] text-slate-500 truncate">{item.courseTitle}</div>
+                        <div className="font-bold text-slate-900 dark:text-slate-100 truncate">{item.title}</div>
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{item.courseTitle}</div>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono hidden sm:inline">
                         {isKm ? 'គោលដៅ' : 'Target'}: {item.expectedDuration}
                       </span>
                       <span className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold border ${
                         item.secondsSpent > 0 
-                          ? 'bg-sky-50 text-sky-700 border-sky-200' 
-                          : 'bg-slate-100 text-slate-500 border-slate-200'
+                          ? 'bg-sky-50 dark:bg-sky-950/80 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-800' 
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700'
                       }`}>
                         ⏱️ {formatted}
                       </span>

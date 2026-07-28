@@ -36,6 +36,26 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
+  // Theme management (Light / Dark mode)
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('elearning_theme');
+    if (saved === 'dark' || saved === 'light') return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('elearning_theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+  };
+
   // Initial user state with local persistence
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('elearning_user');
@@ -464,7 +484,7 @@ export default function App() {
 
   // STANDARD PLATFORM VIEW
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-blue-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col font-sans selection:bg-blue-500 selection:text-white transition-colors duration-200">
       
       {/* Navigation Header */}
       <Navbar
@@ -473,6 +493,8 @@ export default function App() {
         setActiveTab={setActiveTab}
         lang={lang}
         setLang={setLang}
+        theme={theme}
+        onToggleTheme={toggleTheme}
         onOpenAuth={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
         onOpenAiTutor={() => setIsAiTutorOpen(true)}

@@ -140,20 +140,20 @@ export const LearningProgressChart: React.FC<LearningProgressChartProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-6">
+    <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6 transition-colors">
       
       {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-100 text-blue-700 rounded-xl">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-xl">
               <TrendingUp className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-extrabold text-slate-900 font-heading">
+            <h3 className="text-lg font-extrabold text-slate-900 dark:text-white font-heading">
               {isKm ? 'វឌ្ឍនភាពសិក្សា (Learning Progress)' : 'Learning Progress'}
             </h3>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             {isKm 
               ? 'តារាងតាមដានរយះពេលរៀន និងចំនួនមេរៀនដែលបានបញ្ចប់តាមពេលវេលា' 
               : 'Visual breakdown of study duration and completed lessons over time'}
@@ -161,13 +161,13 @@ export const LearningProgressChart: React.FC<LearningProgressChartProps> = ({
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex bg-slate-100 p-1 rounded-2xl text-xs font-bold self-start sm:self-auto">
+        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl text-xs font-bold self-start sm:self-auto">
           <button
             onClick={() => setTimeRange('7days')}
             className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
               timeRange === '7days' 
-                ? 'bg-white text-blue-700 shadow-xs' 
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 shadow-xs' 
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             {isKm ? '៧ ថ្ងៃចុងក្រោយ' : '7 Days'}
@@ -176,8 +176,8 @@ export const LearningProgressChart: React.FC<LearningProgressChartProps> = ({
             onClick={() => setTimeRange('4weeks')}
             className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
               timeRange === '4weeks' 
-                ? 'bg-white text-blue-700 shadow-xs' 
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 shadow-xs' 
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             {isKm ? '៤ សប្តាហ៍' : '4 Weeks'}
@@ -186,8 +186,8 @@ export const LearningProgressChart: React.FC<LearningProgressChartProps> = ({
             onClick={() => setTimeRange('6months')}
             className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
               timeRange === '6months' 
-                ? 'bg-white text-blue-700 shadow-xs' 
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 shadow-xs' 
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             {isKm ? '៦ ខែ' : '6 Months'}
@@ -197,42 +197,42 @@ export const LearningProgressChart: React.FC<LearningProgressChartProps> = ({
 
       {/* Highlights Metrics Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3.5 bg-gradient-to-br from-blue-50 to-indigo-50/60 border border-blue-100 rounded-2xl text-left">
-          <div className="text-[11px] font-bold text-blue-600 flex items-center gap-1.5 mb-1">
+        <div className="p-3.5 bg-gradient-to-br from-blue-50 to-indigo-50/60 dark:from-blue-950/40 dark:to-indigo-950/20 border border-blue-100 dark:border-blue-900/50 rounded-2xl text-left">
+          <div className="text-[11px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1.5 mb-1">
             <Clock className="w-3.5 h-3.5 text-blue-500" />
             <span>{isKm ? 'រយះពេលសរុប' : 'Total Duration'}</span>
           </div>
-          <div className="text-base font-extrabold text-slate-900">
+          <div className="text-base font-extrabold text-slate-900 dark:text-white">
             {formatTime(totalMins)}
           </div>
         </div>
 
-        <div className="p-3.5 bg-gradient-to-br from-emerald-50 to-teal-50/60 border border-emerald-100 rounded-2xl text-left">
-          <div className="text-[11px] font-bold text-emerald-600 flex items-center gap-1.5 mb-1">
+        <div className="p-3.5 bg-gradient-to-br from-emerald-50 to-teal-50/60 dark:from-emerald-950/40 dark:to-teal-950/20 border border-emerald-100 dark:border-emerald-900/50 rounded-2xl text-left">
+          <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 mb-1">
             <BookOpen className="w-3.5 h-3.5 text-emerald-500" />
             <span>{isKm ? 'មេរៀនរៀនចប់' : 'Lessons Done'}</span>
           </div>
-          <div className="text-base font-extrabold text-slate-900">
+          <div className="text-base font-extrabold text-slate-900 dark:text-white">
             {totalCompleted} {isKm ? 'មេរៀន' : 'lessons'}
           </div>
         </div>
 
-        <div className="p-3.5 bg-gradient-to-br from-amber-50 to-orange-50/60 border border-amber-100 rounded-2xl text-left">
-          <div className="text-[11px] font-bold text-amber-600 flex items-center gap-1.5 mb-1">
+        <div className="p-3.5 bg-gradient-to-br from-amber-50 to-orange-50/60 dark:from-amber-950/40 dark:to-orange-950/20 border border-amber-100 dark:border-amber-900/50 rounded-2xl text-left">
+          <div className="text-[11px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5 mb-1">
             <Zap className="w-3.5 h-3.5 text-amber-500" />
             <span>{isKm ? 'ការរៀនបន្តបន្ទាប់' : 'Daily Streak'}</span>
           </div>
-          <div className="text-base font-extrabold text-slate-900">
+          <div className="text-base font-extrabold text-slate-900 dark:text-white">
             5 {isKm ? 'ថ្ងៃជាប់គ្នា' : 'Days Streak'}
           </div>
         </div>
 
-        <div className="p-3.5 bg-gradient-to-br from-purple-50 to-pink-50/60 border border-purple-100 rounded-2xl text-left">
-          <div className="text-[11px] font-bold text-purple-600 flex items-center gap-1.5 mb-1">
+        <div className="p-3.5 bg-gradient-to-br from-purple-50 to-pink-50/60 dark:from-purple-950/40 dark:to-pink-950/20 border border-purple-100 dark:border-purple-900/50 rounded-2xl text-left">
+          <div className="text-[11px] font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1.5 mb-1">
             <Award className="w-3.5 h-3.5 text-purple-500" />
             <span>{isKm ? 'មធ្យមភាគប្រចាំថ្ងៃ' : 'Daily Avg'}</span>
           </div>
-          <div className="text-base font-extrabold text-slate-900">
+          <div className="text-base font-extrabold text-slate-900 dark:text-white">
             {Math.round(totalMins / 7)} {isKm ? 'នាទី/ថ្ងៃ' : 'mins/day'}
           </div>
         </div>

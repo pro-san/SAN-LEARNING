@@ -24,10 +24,10 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   const isKm = lang === 'km';
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group">
       
       {/* Thumbnail & Badges */}
-      <div className="relative aspect-video overflow-hidden bg-slate-100 cursor-pointer" onClick={() => onSelectCourse(course)}>
+      <div className="relative aspect-video overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer" onClick={() => onSelectCourse(course)}>
         <img
           src={course.thumbnail}
           alt={course.titleKm}
@@ -91,7 +91,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
               <span className="text-slate-400 font-normal">({course.reviewCount})</span>
             </div>
             {course.isPopular && (
-              <span className="px-2 py-0.5 bg-amber-50 text-amber-700 font-bold text-[10px] rounded-md border border-amber-200 flex items-center gap-1">
+              <span className="px-2 py-0.5 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 font-bold text-[10px] rounded-md border border-amber-200 dark:border-amber-800 flex items-center gap-1">
                 <Sparkles className="w-3 h-3 text-amber-500" />
                 {isKm ? 'ពេញនិយម' : 'Popular'}
               </span>
@@ -101,26 +101,26 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           {/* Title */}
           <h3 
             onClick={() => onSelectCourse(course)}
-            className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug cursor-pointer font-heading"
+            className="text-base font-bold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug cursor-pointer font-heading"
           >
             {isKm ? course.titleKm : course.titleEn}
           </h3>
 
-          <p className="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2 leading-relaxed">
             {isKm ? course.descriptionKm : course.descriptionEn}
           </p>
         </div>
 
         {/* Instructor & Actions */}
-        <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+        <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
           
           <div className="flex items-center gap-2">
             <img
               src={course.instructorAvatar}
               alt={course.instructorName}
-              className="w-7 h-7 rounded-full object-cover ring-1 ring-slate-200"
+              className="w-7 h-7 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700"
             />
-            <div className="text-[11px] font-semibold text-slate-700 truncate max-w-[120px]">
+            <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[120px]">
               {course.instructorName}
             </div>
           </div>
